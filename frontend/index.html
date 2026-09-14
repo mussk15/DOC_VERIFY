@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuVerify AI - Document Verification & Forensic Tampering Detection</title>
+  <meta name="description" content="Production-grade AI document verification and forensic image tampering detection engine using OpenCV Error Level Analysis and EasyOCR.">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            surface: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#090d16',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons via CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-surface-950 text-slate-100 bg-radial-glow antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- ==================== NAVIGATION BAR ==================== -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-surface-900/80 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & Icon -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-violet-500 flex items-center justify-center shadow-lg shadow-brand-500/20 ring-1 ring-white/20">
+          <i data-lucide="shield-check" class="w-6 h-6 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+              DocuVerify <span class="text-brand-400">AI</span>
+            </span>
+            <span class="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">
+              v2.0
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Automated Verification & Forensic Tampering Engine</p>
+        </div>
+      </div>
+
+      <!-- Center / Right Controls -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <!-- Live API Status Pill -->
+        <div id="api-status-pill" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-medium">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span id="api-status-text">API Connected (FastAPI)</span>
+        </div>
+
+        <!-- Registry Records Modal Trigger -->
+        <button id="btn-view-registry" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 rounded-lg transition">
+          <i data-lucide="database" class="w-3.5 h-3.5 text-brand-400"></i>
+          <span class="hidden md:inline">Registry Records</span>
+        </button>
+
+        <!-- Audit Trail Anchor -->
+        <a href="#audit-section" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 rounded-lg transition">
+          <i data-lucide="history" class="w-3.5 h-3.5 text-violet-400"></i>
+          <span class="hidden md:inline">Audit Trail</span>
+        </a>
+
+        <!-- Swagger Docs Link -->
+        <a href="/docs" target="_blank" rel="noopener" class="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-brand-500/10 hover:bg-brand-500/20 border border-brand-500/30 text-brand-300 rounded-lg transition">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span>Swagger Docs</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+
+    <!-- Hero / Headline -->
+    <div class="text-center max-w-3xl mx-auto space-y-3">
+      <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-300 text-xs font-semibold">
+        <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+        <span>Multi-Layer Forensic Verification Pipeline</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
+        Document Verification & <br class="hidden sm:inline">
+        <span class="bg-gradient-to-r from-brand-400 via-indigo-300 to-rose-400 bg-clip-text text-transparent">
+          Image Tampering Forensics
+        </span>
+      </h1>
+      <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+        Detect digital splicing, forged numbers, and altered credentials with OpenCV Error Level Analysis (ELA), EasyOCR text parsing, and SHA-256 hashed institutional database validation.
+      </p>
+    </div>
+
+    <!-- ==================== DOCUMENT INGESTION ZONE ==================== -->
+    <section class="glass-panel rounded-2xl p-6 sm:p-8 border-gradient-shine space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+            <i data-lucide="file-up" class="w-5 h-5 text-brand-400"></i>
+            <span>Document Ingestion Zone</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Upload document image (JPEG, PNG, WebP) or pick a realistic test sample.</p>
+        </div>
+
+        <!-- Quick Test Samples Buttons -->
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs text-slate-400 font-medium mr-1 flex items-center">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400 mr-1"></i> Quick Test:
+          </span>
+          <button type="button" data-sample="sample_authentic_david.jpg" class="btn-sample px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 transition flex items-center space-x-1.5">
+            <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Authentic (David)</span>
+          </button>
+          <button type="button" data-sample="sample_tampered_sarah.jpg" class="btn-sample px-3 py-1.5 rounded-lg text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-300 transition flex items-center space-x-1.5">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-400"></i>
+            <span>Tampered (Sarah - Spliced)</span>
+          </button>
+          <button type="button" data-sample="sample_authentic_sarah.jpg" class="btn-sample px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition flex items-center space-x-1.5 hidden sm:flex">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-400"></i>
+            <span>Authentic (Sarah)</span>
+          </button>
+          <button type="button" data-sample="sample_unknown_student.jpg" class="btn-sample px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 transition flex items-center space-x-1.5 hidden sm:flex">
+            <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span>Unregistered</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Drag & Drop Zone -->
+      <div id="dropzone" class="relative group cursor-pointer border-2 border-dashed border-slate-700/80 hover:border-brand-500/80 rounded-xl p-8 transition-all bg-slate-900/40 hover:bg-slate-900/70 text-center">
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/bmp" class="hidden">
+        
+        <!-- Empty Dropzone State -->
+        <div id="dropzone-prompt" class="space-y-4">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-brand-500/10 text-brand-400 flex items-center justify-center ring-1 ring-brand-500/20 group-hover:scale-110 transition duration-200">
+            <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+          </div>
+          <div>
+            <p class="text-sm sm:text-base font-semibold text-slate-200">
+              Drag and drop document image here, or <span class="text-brand-400 underline decoration-brand-500/50 underline-offset-4">browse files</span>
+            </p>
+            <p class="text-xs text-slate-400 mt-1">Supports high-res JPEG, PNG, or WebP certificates & transcripts up to 20MB</p>
+          </div>
+        </div>
+
+        <!-- Selected File Preview Container (hidden by default) -->
+        <div id="file-preview-card" class="hidden items-center justify-between p-4 bg-slate-800/80 border border-slate-700 rounded-xl text-left max-w-2xl mx-auto">
+          <div class="flex items-center space-x-4 overflow-hidden">
+            <img id="preview-thumbnail" src="" alt="Document Preview" class="w-16 h-16 object-cover rounded-lg border border-slate-700 shadow flex-shrink-0">
+            <div class="min-w-0">
+              <p id="preview-filename" class="text-sm font-semibold text-white truncate"></p>
+              <p id="preview-filesize" class="text-xs text-slate-400 mt-0.5"></p>
+              <span class="inline-flex items-center text-[10px] text-brand-300 bg-brand-500/10 px-2 py-0.5 rounded mt-1">Ready for Forensic Scan</span>
+            </div>
+          </div>
+          <button type="button" id="btn-clear-file" class="p-2 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition ml-2 flex-shrink-0" title="Remove file">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <div class="text-xs text-slate-400 flex items-center space-x-2">
+          <i data-lucide="lock" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+          <span>Documents processed securely in-memory. Cryptographic hashes logged to audit store.</span>
+        </div>
+
+        <button type="button" id="btn-verify" disabled class="btn-primary-gradient w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm text-white shadow-lg flex items-center justify-center space-x-2.5">
+          <span id="btn-icon-container" class="flex items-center justify-center">
+            <i data-lucide="scan" class="w-4 h-4"></i>
+          </span>
+          <span id="btn-label">Run Verification & Forensic Analysis</span>
+        </button>
+      </div>
+
+      <!-- Processing Progress Banner (hidden by default) -->
+      <div id="processing-banner" class="hidden p-4 rounded-xl bg-brand-950/50 border border-brand-500/30 space-y-3">
+        <div class="flex items-center justify-between text-xs">
+          <span class="font-semibold text-brand-300 flex items-center space-x-2">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-brand-400"></i>
+            <span id="processing-stage-text">Analyzing compression error levels (OpenCV ELA)...</span>
+          </span>
+          <span class="text-slate-400 font-mono">Pipeline active</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div class="bg-gradient-to-r from-brand-500 to-indigo-400 h-1.5 rounded-full w-2/3 animate-pulse"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== RESULTS SECTION (SIDE-BY-SIDE) ==================== -->
+    <section id="results-section" class="hidden space-y-6">
+      
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-extrabold text-white flex items-center space-x-2">
+            <i data-lucide="check-check" class="w-6 h-6 text-brand-400"></i>
+            <span>Forensic & Registry Verification Analysis</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Dual-stream breakdown of image forensics alongside institutional database verification.</p>
+        </div>
+        <span id="result-timestamp" class="text-xs font-mono text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 hidden sm:block"></span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- ================= LEFT PANEL: FORENSIC ANALYSIS VIEW ================= -->
+        <div class="lg:col-span-6 glass-panel rounded-2xl p-6 border-gradient-shine space-y-5 flex flex-col justify-between">
+          
+          <div class="space-y-4">
+            <!-- Header & Mode Tabs -->
+            <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-800 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400">
+                  <i data-lucide="microscope" class="w-4 h-4"></i>
+                </span>
+                <h3 class="text-base font-bold text-white">Forensic Analysis View</h3>
+              </div>
+
+              <!-- View Switcher Tabs -->
+              <div class="flex rounded-lg bg-slate-900 p-1 border border-slate-800 text-xs font-medium text-slate-400">
+                <button type="button" id="tab-side-by-side" class="px-2.5 py-1 rounded-md bg-brand-600 text-white shadow transition">Dual View</button>
+                <button type="button" id="tab-original" class="px-2.5 py-1 rounded-md hover:text-white transition">Original</button>
+                <button type="button" id="tab-ela" class="px-2.5 py-1 rounded-md hover:text-white transition">ELA Heatmap</button>
+              </div>
+            </div>
+
+            <!-- Image Viewports -->
+            <div id="image-viewport-container" class="space-y-3">
+              <!-- Dual View Grid -->
+              <div id="dual-view-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Original Image View -->
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium px-1">
+                    <span>Original Document</span>
+                    <button type="button" onclick="openLightbox('original')" class="hover:text-brand-400 transition" title="Enlarge original">
+                      <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                  <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 aspect-[4/3] flex items-center justify-center group">
+                    <img id="view-original-img" src="" alt="Original Document" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('original')">
+                    <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur text-[10px] font-mono text-slate-300">Input Source</div>
+                  </div>
+                </div>
+
+                <!-- ELA Heatmap View -->
+                <div class="space-y-1.5">
+                  <div class="flex items-center justify-between text-[11px] text-slate-400 font-medium px-1">
+                    <span class="text-rose-400 font-semibold">ELA Error Level Map</span>
+                    <button type="button" onclick="openLightbox('ela')" class="hover:text-brand-400 transition" title="Enlarge ELA Heatmap">
+                      <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                  <div class="relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 aspect-[4/3] flex items-center justify-center group">
+                    <img id="view-ela-img" src="" alt="ELA Heatmap" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('ela')">
+                    <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur text-[10px] font-mono text-rose-300">90% Quality Delta</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Single Full View (Toggled when single tab active) -->
+              <div id="single-view-container" class="hidden aspect-[16/10] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center relative">
+                <img id="view-single-img" src="" alt="Document Focus" class="w-full h-full object-contain cursor-zoom-in" onclick="openLightbox('current')">
+                <div id="single-view-badge" class="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur text-[10px] font-mono text-slate-300"></div>
+              </div>
+            </div>
+
+            <!-- Forensic Telemetry Metrics Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+              <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Mean Error</p>
+                <p id="metric-mean-error" class="text-base font-extrabold text-white font-mono mt-0.5">--</p>
+                <span class="text-[10px] text-slate-400">Baseline diff</span>
+              </div>
+              <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Peak Disparity</p>
+                <p id="metric-max-error" class="text-base font-extrabold text-white font-mono mt-0.5">--</p>
+                <span class="text-[10px] text-slate-400">Max edge error</span>
+              </div>
+              <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">DCT Anomalies</p>
+                <p id="metric-anomalous-blocks" class="text-base font-extrabold text-white font-mono mt-0.5">--</p>
+                <span class="text-[10px] text-slate-400">Outlier blocks</span>
+              </div>
+              <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-xl">
+                <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Anomaly Ratio</p>
+                <p id="metric-anomaly-ratio" class="text-base font-extrabold text-white font-mono mt-0.5">--</p>
+                <span class="text-[10px] text-slate-400">Area variance</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forensic Technical Narrative -->
+          <div class="bg-slate-900/60 border border-slate-800/80 rounded-xl p-3.5 space-y-1">
+            <p class="text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
+              <i data-lucide="info" class="w-3.5 h-3.5 text-brand-400"></i>
+              <span>Forensic Diagnosis Summary</span>
+            </p>
+            <p id="forensic-summary-text" class="text-xs text-slate-400 leading-relaxed"></p>
+          </div>
+
+        </div>
+
+        <!-- ================= RIGHT PANEL: VERIFICATION REPORT ================= -->
+        <div class="lg:col-span-6 glass-panel rounded-2xl p-6 border-gradient-shine space-y-5 flex flex-col justify-between">
+          
+          <div class="space-y-4">
+            <!-- Header & Report ID -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400">
+                  <i data-lucide="clipboard-check" class="w-4 h-4"></i>
+                </span>
+                <h3 class="text-base font-bold text-white">Verification Report</h3>
+              </div>
+              <span id="audit-id-badge" class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">Audit #--</span>
+            </div>
+
+            <!-- Large Status Verdict Banner -->
+            <div id="verdict-banner" class="p-4 rounded-xl border flex items-center space-x-3.5 transition-all">
+              <div id="verdict-icon-container" class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                <i id="verdict-icon" data-lucide="shield-alert" class="w-7 h-7"></i>
+              </div>
+              <div>
+                <span id="verdict-badge" class="text-xs font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full"></span>
+                <p id="verdict-summary" class="text-xs font-medium text-slate-200 mt-1 leading-snug"></p>
+              </div>
+            </div>
+
+            <!-- Risk Gauge & Meter -->
+            <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-2.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-300 font-semibold flex items-center space-x-1.5">
+                  <i data-lucide="gauge" class="w-4 h-4 text-brand-400"></i>
+                  <span>ELA Tamper Risk Score</span>
+                </span>
+                <div class="flex items-center space-x-2">
+                  <span id="gauge-level-badge" class="font-bold text-[11px] px-2 py-0.5 rounded uppercase">--</span>
+                  <span id="gauge-score-value" class="font-extrabold font-mono text-sm text-white">--%</span>
+                </div>
+              </div>
+
+              <!-- Meter Bar Track -->
+              <div class="w-full bg-slate-950 rounded-full h-3 overflow-hidden p-0.5 border border-slate-800">
+                <div id="gauge-bar" class="risk-meter-fill h-full rounded-full w-0 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+              </div>
+
+              <div class="flex justify-between text-[10px] font-mono text-slate-400 px-1">
+                <span>0% Clean (Uniform)</span>
+                <span>25% Moderate</span>
+                <span>50% Spliced</span>
+                <span>100% Critical</span>
+              </div>
+            </div>
+
+            <!-- Extracted OCR Document Data Card -->
+            <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="text-xs font-bold text-white flex items-center space-x-1.5">
+                  <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+                  <span>Extracted OCR Credentials</span>
+                </span>
+                <span id="ocr-confidence-badge" class="text-[11px] font-mono text-slate-400">Conf: --%</span>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Candidate Name</span>
+                  <p id="extracted-name" class="font-bold text-slate-200 mt-0.5 truncate">--</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Student ID / Roll No</span>
+                  <p id="extracted-id" class="font-mono font-bold text-brand-300 mt-0.5">--</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Marks / Grade</span>
+                  <p id="extracted-marks" class="font-bold text-slate-200 mt-0.5">--</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Degree / Program</span>
+                  <p id="extracted-course" class="font-semibold text-slate-300 mt-0.5 truncate">--</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Institutional Registry Cross-Check Card -->
+            <div id="registry-card" class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-3">
+              <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="text-xs font-bold text-white flex items-center space-x-1.5">
+                  <i data-lucide="shield" class="w-4 h-4 text-emerald-400"></i>
+                  <span>Institutional Registry Record</span>
+                </span>
+                <span id="registry-match-pill" class="text-[10px] font-black uppercase px-2 py-0.5 rounded">--</span>
+              </div>
+
+              <div id="registry-matched-content" class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Official Record Name</span>
+                  <p id="reg-official-name" class="font-semibold text-slate-200 mt-0.5 truncate">--</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Official ID</span>
+                  <p id="reg-official-id" class="font-mono font-semibold text-slate-200 mt-0.5">--</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Recorded Performance</span>
+                  <p id="reg-official-marks" class="font-semibold text-slate-200 mt-0.5">--</p>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 uppercase font-semibold">Conferral Year</span>
+                  <p id="reg-official-year" class="font-semibold text-slate-200 mt-0.5">--</p>
+                </div>
+              </div>
+
+              <div id="registry-not-found-content" class="hidden text-xs text-slate-400 py-1">
+                No matching candidate found in the institutional database for the extracted identifiers.
+              </div>
+            </div>
+
+            <!-- Discrepancies Alert Box (Conditional) -->
+            <div id="discrepancies-box" class="hidden p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1.5 text-xs">
+              <div class="flex items-center space-x-1.5 font-bold">
+                <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i>
+                <span>Detected Divergences & Anomalies</span>
+              </div>
+              <ul id="discrepancies-list" class="list-disc list-inside space-y-0.5 text-amber-200/90 pl-1 font-medium"></ul>
+            </div>
+          </div>
+
+          <!-- Document Cryptographic Hash Footer -->
+          <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+            <div class="flex items-center space-x-1.5 overflow-hidden">
+              <span class="font-mono text-slate-400">SHA-256:</span>
+              <span id="doc-hash-text" class="font-mono text-slate-300 truncate max-w-[200px] sm:max-w-xs">--</span>
+            </div>
+            <button type="button" id="btn-copy-hash" class="p-1 text-slate-400 hover:text-white transition" title="Copy SHA-256 Hash">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================== AUDIT TRAIL TABLE SECTION ==================== -->
+    <section id="audit-section" class="glass-panel rounded-2xl p-6 sm:p-8 border-gradient-shine space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+        <div>
+          <h2 class="text-lg font-bold text-white flex items-center space-x-2">
+            <i data-lucide="list-checks" class="w-5 h-5 text-violet-400"></i>
+            <span>Verification Audit Trail</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Immutable historical records persisted in SQLite database (<code class="text-brand-300">docuverify.db</code>).</p>
+        </div>
+
+        <button type="button" id="btn-refresh-audit" class="px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition flex items-center space-x-2 self-start sm:self-auto">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="refresh-icon"></i>
+          <span>Refresh Logs</span>
+        </button>
+      </div>
+
+      <!-- Table -->
+      <div class="overflow-x-auto rounded-xl border border-slate-800">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900/90 text-slate-400 uppercase tracking-wider font-mono border-b border-slate-800 text-[10px]">
+            <tr>
+              <th class="px-4 py-3">ID / Time</th>
+              <th class="px-4 py-3">Filename</th>
+              <th class="px-4 py-3">Document SHA-256</th>
+              <th class="px-4 py-3">Detected Credential</th>
+              <th class="px-4 py-3">Tamper Risk</th>
+              <th class="px-4 py-3 text-right">Verdict</th>
+            </tr>
+          </thead>
+          <tbody id="audit-table-body" class="divide-y divide-slate-800/60 bg-slate-900/30">
+            <tr>
+              <td colspan="6" class="px-4 py-8 text-center text-slate-400">Loading audit trail...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== REGISTRY RECORDS MODAL ==================== -->
+  <div id="registry-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-4xl rounded-2xl p-6 border-slate-700 space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <i data-lucide="database" class="w-5 h-5 text-brand-400"></i>
+          <h3 class="text-base font-bold text-white">Institutional Mock Registry Records</h3>
+        </div>
+        <button type="button" id="btn-close-registry-modal" class="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400">
+        Official academic records seeded in SQLite with SHA-256 hashed identity keys to protect student PII.
+      </p>
+
+      <div class="overflow-y-auto flex-1 border border-slate-800 rounded-xl">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900 sticky top-0 text-slate-400 uppercase tracking-wider font-mono border-b border-slate-800 text-[10px]">
+            <tr>
+              <th class="px-4 py-3">Student Name</th>
+              <th class="px-4 py-3">Student ID</th>
+              <th class="px-4 py-3">SHA-256 Hash</th>
+              <th class="px-4 py-3">Course / Degree</th>
+              <th class="px-4 py-3">Performance</th>
+              <th class="px-4 py-3">Year</th>
+            </tr>
+          </thead>
+          <tbody id="registry-table-body" class="divide-y divide-slate-800/60 bg-slate-900/30">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== IMAGE LIGHTBOX MODAL ==================== -->
+  <div id="lightbox-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
+      <button type="button" id="btn-close-lightbox" class="absolute -top-12 right-0 p-2 text-white hover:text-rose-400 transition">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <img id="lightbox-img" src="" alt="Enlarged View" class="max-h-[85vh] max-w-full object-contain rounded-xl border border-slate-700 shadow-2xl">
+      <p id="lightbox-caption" class="text-xs font-mono text-slate-300 mt-2 px-3 py-1 bg-black/60 rounded-full"></p>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 px-4 py-2.5 rounded-xl text-xs font-semibold shadow-2xl flex items-center space-x-2 border"></div>
+
+  <!-- Application Logic -->
+  <script src="/app.js"></script>
+</body>
+</html>
